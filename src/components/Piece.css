@@ -1,0 +1,18 @@
+.piece {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    position: relative;
+    z-index: 10;
+    width: 90px;
+    height:90px;
+  }
+
+  .black{
+    color:black;
+  }
+
+
+  .white {
+    color: white;
+  }
