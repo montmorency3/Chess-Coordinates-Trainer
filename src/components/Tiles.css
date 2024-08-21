@@ -1,0 +1,14 @@
+.tile {
+    display: flex;
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    position:relative;
+    z-index: 2;
+  }
+
+
+  .tiles{
+    display:grid;
+    grid-template-columns: repeat(8,var(--tile-size));
+    grid-template-rows: repeat(8,var(--tile-size));
+}

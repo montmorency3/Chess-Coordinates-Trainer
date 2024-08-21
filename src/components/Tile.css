@@ -1,11 +1,10 @@
 .tile {
-    display: flex;
-    align-items: center; /* Center vertically */
-    justify-content: center; /* Center horizontally */
-    position:relative;
-    z-index: 2;
-  }
+  display: flex;
+  align-items: center; /* Center vertically */
+  justify-content: center; /* Center horizontally */
+  position:relative;
+  z-index: 2;
+}
 
-  
 
-  
+
