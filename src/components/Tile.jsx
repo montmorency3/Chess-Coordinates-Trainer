@@ -38,12 +38,12 @@ function Tile(props){
     { (rank <= 2 || rank >= 7) &&
     <Piece 
     piece={props.piece} 
-    tile={props.tile}
+    id={props.tile}
     color={ rank > 6 ? "black" : "white"}
+
     /> }
     </div>
     );
-
 }
 
 export default Tile;
