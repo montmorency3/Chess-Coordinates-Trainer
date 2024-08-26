@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React from "react";
 import { faChessRook as rook} from '@fortawesome/free-solid-svg-icons'
 import { faChessPawn as pawn} from '@fortawesome/free-solid-svg-icons'
 import { faChessKnight as knight} from '@fortawesome/free-solid-svg-icons'
@@ -20,28 +20,23 @@ function Piece(props){
         "knight" : knight
       };
 
-    const pieceRef = useRef(null); 
-
-
-
     function handleDragStart(e){
         setTimeout( () => {
             e.target.style.display="none"
         },0)
         const data = JSON.stringify({ id: e.target.id, color: e.target.dataset.color, droppedPiece: e.target.dataset.piece});
         e.dataTransfer.setData('text/plain', data);
+        console.log(data);
     }
 
     function handleDragEnd(e){
         console.log("completed")
-        pieceRef.current.style.display = "blocked";
-
+        e.target.style.display="flex"
+        
     }
-
     function handleDragOver(e){
         e.preventDefault();
     }
-
     function handleDrop(e){
         e.preventDefault();
 

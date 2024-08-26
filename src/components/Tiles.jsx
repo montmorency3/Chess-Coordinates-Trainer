@@ -19,7 +19,27 @@ const startingPieces = [
 
 
 const [pieces, setPieces] = useState(startingPieces);
+const [coordinate, setCoordinate] = useState(getRandomCoordinate);
+const [isClicked, setClick ] = useState(false);
 
+function getRandomCoordinate(){
+    return getRandomInt(0,7) + "" + getRandomInt(0,7)
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function decimalToCoord(decimal){
+    const rank = parseInt(decimal[1], 10);
+    const file = parseInt(decimal[0], 10); 
+    const string = (8 - file).toString()
+
+    return (String.fromCharCode(rank+97) + string)
+
+
+    //
+}
 
 function getClassName(indexArray, indexItem){
     let c = "tile";
@@ -29,6 +49,14 @@ function getClassName(indexArray, indexItem){
 
 function handleDragOver(e){
     e.preventDefault();
+}
+
+function handleClick(e){
+
+
+    if (e.target.id.toString() === coordinate){ 
+        setCoordinate(getRandomCoordinate());
+    }
 }
 
 function handleDrop(e){
@@ -63,9 +91,7 @@ function handleDrop(e){
     else {
         setPieces(pieces);
     }
-
 }
-
     return (
         <div className="tiles">
             {board.map ( (array,indexArray) => {
@@ -75,17 +101,24 @@ function handleDrop(e){
                     id={tile} 
                     key={tile}
                     onDragOver={handleDragOver}
-                    onDrop={handleDrop}> 
-                    {pieces[indexArray][indexItem] !== null &&
+                    onDrop={handleDrop}
+                    onClick={handleClick}
+                    > 
+                    
+                    {/* {pieces[indexArray][indexItem] !== null &&
                      <Piece 
                      piece={pieces[indexArray][indexItem].split(' ')[1]} 
                      color={pieces[indexArray][indexItem].split(' ')[0]}
                      tile={tile}/>
-                    }
+                    } */}
                     </div>
                     );
             })
             })}
+
+        <div className="coordinate-trainer">
+                {decimalToCoord(coordinate)}
+            </div>
         </div>
     )
 }

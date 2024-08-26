@@ -3,7 +3,7 @@
     align-items: center; /* Center vertically */
     justify-content: center; /* Center horizontally */
     position:relative;
-    z-index: 2;
+    z-index: 10;
   }
 
 
@@ -11,4 +11,18 @@
     display:grid;
     grid-template-columns: repeat(8,var(--tile-size));
     grid-template-rows: repeat(8,var(--tile-size));
+}
+
+
+.coordinate-trainer {
+  position: absolute;
+  top: 49%;
+  left: 50.5%;
+  transform: translate(-50%, -50%);
+  font-size: 185px;
+  font-weight: bold;
+  color: rgba(243, 239, 239, 0.807); /* or any color that stands out */
+  text-shadow: 10px 2px 5px rgba(0, 0, 0, 0.3);
+  pointer-events: none; /* Ensure it does not interfere with board interactions */
+  z-index: 20; /* Ensure it is above the tiles */
 }
