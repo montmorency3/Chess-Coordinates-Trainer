@@ -25,4 +25,19 @@
   text-shadow: 10px 2px 5px rgba(0, 0, 0, 0.3);
   pointer-events: none; /* Ensure it does not interfere with board interactions */
   z-index: 20; /* Ensure it is above the tiles */
+  animation: fadeInOut 1s ease-in-out forwards; /* Play once */
 }
+
+
+@keyframes fadeInOut {
+  0% {
+      opacity: 0;
+  }
+  50% {
+      opacity: 1;
+  }
+  100% {
+      opacity: 0;
+  }
+}
+

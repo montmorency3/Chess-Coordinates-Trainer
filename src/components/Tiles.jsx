@@ -1,6 +1,8 @@
 import React, {useState} from "react";
 import Piece from "./Piece";
+import Score from "./Score";
 import "./Tiles.css"
+
 
 function Tiles(props){
 
@@ -20,7 +22,8 @@ const startingPieces = [
 
 const [pieces, setPieces] = useState(startingPieces);
 const [coordinate, setCoordinate] = useState(getRandomCoordinate);
-const [isClicked, setClick ] = useState(false);
+const [score, setScore ] = useState(0);
+const [isCorrect, setIsCorrect] = useState(true);
 
 function getRandomCoordinate(){
     return getRandomInt(0,7) + "" + getRandomInt(0,7)
@@ -52,10 +55,16 @@ function handleDragOver(e){
 }
 
 function handleClick(e){
-
+    console.log(e.target);
 
     if (e.target.id.toString() === coordinate){ 
         setCoordinate(getRandomCoordinate());
+        setScore(score +1)
+        setIsCorrect(true);
+    } else {
+        setIsCorrect(false);
+        setCoordinate(getRandomCoordinate());
+
     }
 }
 
@@ -93,6 +102,8 @@ function handleDrop(e){
     }
 }
     return (
+
+
         <div className="tiles">
             {board.map ( (array,indexArray) => {
                 return array.map( (tile, indexItem) => {
@@ -116,9 +127,12 @@ function handleDrop(e){
             })
             })}
 
-        <div className="coordinate-trainer">
+        <div className="coordinate-trainer" key = {coordinate}k>
                 {decimalToCoord(coordinate)}
             </div>
+
+            <Score score={score} isCorrect={isCorrect}/>
+
         </div>
     )
 }

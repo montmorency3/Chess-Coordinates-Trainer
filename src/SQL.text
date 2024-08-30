@@ -1,0 +1,15 @@
+CREATE TABLE Users (
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(200) UNIQUE NOT NULL,
+    hashed_password VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE ChessCoords( 
+    user_id INT,
+    coordinate INT NOT NULL, 
+    Missed INT NOT NULL,
+    PRIMARY KEY (user_id, coordinate),
+    FOREIGN KEY (user_id) references Users(user_id)
+);
+
