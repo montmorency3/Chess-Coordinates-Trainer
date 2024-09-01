@@ -1,0 +1,621 @@
+@import './constants.css';
+
+html,body {
+  padding: 0;
+  margin: 0;
+}
+
+.App {
+  display:grid;
+  place-content: center;
+  height:100vh;
+  /* background-color: var(--bg-color); */
+}
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+const express = require('express');
+const { Pool } = require('pg');
+
+console.log("hello world");
+
+const cors = require('cors'); // Import the CORS middleware
+
+const app = express();
+const port = 4000;
+
+const db =new Pool({
+    user: "postgres",
+    host: "localhost",
+    database: "ChessApp",
+    password: "king",
+    port: process.env.PORT,
+})
+
+db.connect();
+
+
+// Enable CORS for all origins
+app.use(cors());
+// Middleware
+app.use(express.json());
+
+// Routes
+app.get('/', async (req, res) => {
+  res.send("hello");
+});
+
+
+
+app.post("/login", async (req,res) => {
+  const { email, password } = req.body.inputData
+  const result = await db.query('SELECT * FROM Users WHERE email = $1', [email]);
+
+  if (result.rows.length > 0) {
+    const registeredPassword = result.rows[0].hashed_password
+
+    if (password === registeredPassword) {
+      res.json({ message: 'Login successful', email });
+    }
+    else {
+      res.json({ message: 'Login unsuccessful', email});
+    }
+  }
+
+})
+
+// Start server
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+import "./Score.css"
+
+
+import React from "react";
+
+function Score(props){
+
+    const className = (props.isCorrect ? '' : 'shake wrong-answer') + " score";
+    const animationKey = Date.now() 
+    console.log(className)
+
+
+    return (
+        <div 
+        className={className}
+        key={animationKey}
+        > 
+            {props.score}
+        </div>
+    );
+}
+
+export default Score;.files {
+    color : var(--dark-tile);
+    height: calc(.25*var(--tile-size));
+    grid-column: 2;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    color:black;
+}
+
+
+import React from "react";
+import "./Board.css"
+import Files from "./Files";
+import "./Files.css"
+import Ranks from "./Ranks";
+import "./Ranks.css"
+import Tiles from "./Tiles";
+
+
+
+
+
+function Board(){
+    const ranks = Array(8).fill().map( (x, i ) => i);
+    const files = Array(8).fill().map( (x,i) =>  i);
+    const board = Array(8).fill(null).map( () => Array(8).fill(null))
+
+    board.forEach( ( (array,indexArray) => {
+        array.forEach( (item, indexItem) => {
+            board[indexArray][indexItem] = (indexArray + "" + indexItem);
+        })
+    }))
+
+    return (
+        <div className="board"> 
+        <Ranks ranks={ranks}/>
+            <div class="tilesList"> 
+            <Tiles key="tiles" ranks={ranks} files={files} board={board}/>
+            </div>
+        <Files files={files}/>
+        
+        </div>
+    );
+}
+
+export default Board;import React, {useState} from "react";
+import Piece from "./Piece";
+import Score from "./Score";
+import "./Tiles.css"
+
+
+function Tiles(props){
+
+const board = props.board;
+
+const startingPieces = [
+    ["b rook", "b knight", "b bishop", "b queen", "b king", "b bishop", "b knight", "b rook"],
+    ["b pawn", "b pawn", "b pawn", "b pawn", "b pawn", "b pawn", "b pawn", "b pawn"],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    [null, null, null, null, null, null, null, null],
+    ["w pawn", "w pawn", "w pawn", "w pawn", "w pawn", "w pawn", "w pawn", "w pawn"],
+    ["w rook", "w knight", "w bishop", "w queen", "w king", "w bishop", "w knight", "w rook"]
+]
+
+
+const [pieces, setPieces] = useState(startingPieces);
+const [coordinate, setCoordinate] = useState(getRandomCoordinate);
+const [score, setScore ] = useState(0);
+const [isCorrect, setIsCorrect] = useState(true);
+
+function getRandomCoordinate(){
+    return getRandomInt(0,7) + "" + getRandomInt(0,7)
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function decimalToCoord(decimal){
+    const rank = parseInt(decimal[1], 10);
+    const file = parseInt(decimal[0], 10); 
+    const string = (8 - file).toString()
+
+    return (String.fromCharCode(rank+97) + string)
+
+
+    //
+}
+
+function getClassName(indexArray, indexItem){
+    let c = "tile";
+    c += ((indexArray + indexItem) % 2 === 0 ? " tile-light" : " tile-dark")
+    return c;
+}
+
+function handleDragOver(e){
+    e.preventDefault();
+}
+
+function handleClick(e){
+    console.log(e.target);
+
+    if (e.target.id.toString() === coordinate){ 
+        setCoordinate(getRandomCoordinate());
+        setScore(score +1)
+        setIsCorrect(true);
+    } else {
+        setIsCorrect(false);
+        setCoordinate(getRandomCoordinate());
+
+    }
+}
+
+function handleDrop(e){
+    e.preventDefault();
+    const data = e.dataTransfer.getData("text/plain");
+    const parsedData= JSON.parse(data);
+    const startingSquare = parsedData.id
+    const indexi = parseInt(startingSquare[0],10);
+    const indexy = parseInt(startingSquare[1],10);
+    const endSquare = e.target.id
+    const iEnd = parseInt(endSquare[0],10);
+    const yEnd = parseInt(endSquare[1],10);
+    const piece = pieces[indexi][indexy];
+
+    if (startingSquare !== endSquare){
+    const updatedPieces = pieces.map( (array, indexArray) => {
+        return (
+        array.map( (item, indexItem) => {
+
+            if (indexArray === indexi && indexItem === indexy){
+                return null;
+            }
+            else if (indexArray === iEnd && indexItem === yEnd){
+                return piece;
+            } else {
+                return item;
+            }
+        })
+        )
+    })
+    setPieces(updatedPieces)}
+    else {
+        setPieces(pieces);
+    }
+}
+    return (
+
+
+        <div className="tiles">
+            {board.map ( (array,indexArray) => {
+                return array.map( (tile, indexItem) => {
+                    return (
+                    <div className = {getClassName(indexArray, indexItem)} 
+                    id={tile} 
+                    key={tile}
+                    onDragOver={handleDragOver}
+                    onDrop={handleDrop}
+                    onClick={handleClick}
+                    > 
+                    
+                    {/* {pieces[indexArray][indexItem] !== null &&
+                     <Piece 
+                     piece={pieces[indexArray][indexItem].split(' ')[1]} 
+                     color={pieces[indexArray][indexItem].split(' ')[0]}
+                     tile={tile}/>
+                    } */}
+                    </div>
+                    );
+            })
+            })}
+
+        <div className="coordinate-trainer" key = {coordinate}k>
+                {decimalToCoord(coordinate)}
+            </div>
+
+            <Score score={score} isCorrect={isCorrect}/>
+
+        </div>
+    )
+}
+
+export default Tiles;import React from "react";
+import './Ranks.css'
+
+
+function Ranks(props){
+
+    const ranks = [...props.ranks].reverse();
+
+    function numToRank(num){
+        return num + 1
+    }
+    return (
+        <div className="ranks"> 
+            {ranks.map( (rank) => {
+                return <span key={numToRank(rank)}> {numToRank(rank)} </span>
+            })
+            }
+        </div>
+    )
+
+}
+
+export default Ranksimport React from "react";
+import { faChessRook as rook} from '@fortawesome/free-solid-svg-icons'
+import { faChessPawn as pawn} from '@fortawesome/free-solid-svg-icons'
+import { faChessKnight as knight} from '@fortawesome/free-solid-svg-icons'
+import { faChessQueen as queen} from '@fortawesome/free-solid-svg-icons'
+import { faChessBishop as bishop} from '@fortawesome/free-solid-svg-icons'
+import { faChessKing as king} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import "./Piece.css";
+
+
+
+function Piece(props){
+    const pieceMap = {
+        "rook": rook,
+        "pawn": pawn,
+        "bishop": bishop,
+        "queen" : queen,
+        "king" : king,
+        "knight" : knight
+      };
+
+    function handleDragStart(e){
+        setTimeout( () => {
+            e.target.style.display="none"
+        },0)
+        const data = JSON.stringify({ id: e.target.id, color: e.target.dataset.color, droppedPiece: e.target.dataset.piece});
+        e.dataTransfer.setData('text/plain', data);
+        console.log(data);
+    }
+
+    function handleDragEnd(e){
+        console.log("completed")
+        e.target.style.display="flex"
+        
+    }
+    function handleDragOver(e){
+        e.preventDefault();
+    }
+    function handleDrop(e){
+        e.preventDefault();
+
+    }
+
+    return (
+    <div 
+    className="piece" 
+    key={props.tile} 
+    id={props.tile}
+    data-color={props.color}
+    data-piece={props.piece}
+    draggable={true}
+    onDragStart={handleDragStart}
+    onDragOver={handleDragOver}
+    onDrop={handleDrop}
+    onDragEnd={handleDragEnd}
+
+    >
+        <div style={{   pointerEvents: 'none'}}>
+        {props.piece !== null &&<FontAwesomeIcon icon={pieceMap[props.piece]} style={{ zIndex: -2 }}size="3x" className={props.color}/> }
+        </div>
+        </div>
+    );
+}
+
+export default Piece;body {
+    background-color: #E3F2FD !important;
+background-image: url("https://www.transparenttextures.com/patterns/gplay.png");
+}import React, {useState } from "react";
+import axios from "axios";
+import "./Login.css"
+
+
+
+
+function Login(props){
+    const [inputData, setInputData] = useState({
+        email: "", 
+        password: "", 
+    });
+    
+
+    async function handleClick(e)  {
+        e.preventDefault();
+        const {name} = e.target;
+        if (name==="Guest"){
+            props.onAuthentication(true);
+        }else {
+            try{
+                const response = await axios.post('http://localhost:4000/login', {inputData});
+                console.log(response.data.message);
+                if (response.data.message === 'Login successful'){
+                    props.onAuthentication(true);
+                }
+            } catch (error){
+                console.log(error);
+            }
+        }
+        }
+
+
+
+    function handleChange(e){
+        const {name, value} = e.target;
+        setInputData( prev => (
+            {
+                ...prev,
+                [name] : value
+            }
+        )
+        )
+    }
+
+    return (
+
+         
+        <form>
+  <div class="form-group">
+    <label htmlFor="exampleInputEmail1">Email address</label>
+    <input name="email" onChange={handleChange} type="email" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"/>
+    <small id="emailHelp" className="form-text text-muted">We'll never share your email with anyone else.</small>
+  </div>
+  <div className="form-group">
+    <label htmlFor="exampleInputPassword1">Password</label>
+    <input name="password" onChange={handleChange} type="password" className="form-control" id="exampleInputPassword1"/>
+  </div>
+
+  <button name="Authenticate" onClick={handleClick} type="submit" className="btn btn-primary" style={{marginTop: 20}}>Submit
+  </button>
+
+  <button name="Guest" onClick={handleClick} type="submit" className="btn btn-primary" style={{marginLeft: 100, marginTop: 20,backgroundColor: 'gray', border: "black"}}>Log In as Guest 
+  </button>
+
+</form>
+
+    );
+}
+
+export default Login;.piece {
+    display: flex;
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    position: relative;
+    z-index: -2;
+    width: 90px;
+    height:90px;
+  }
+
+  .b{
+    color:black;
+  }
+
+  .w {
+    color: white;
+  }
+.ranks {
+    color : var(--dark-tile);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    color:black;
+}.tile {
+    display: flex;
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    position:relative;
+    z-index: 10;
+  }
+
+
+  .tiles{
+    display:grid;
+    grid-template-columns: repeat(8,var(--tile-size));
+    grid-template-rows: repeat(8,var(--tile-size));
+}
+
+
+.coordinate-trainer {
+  position: absolute;
+  top: 49%;
+  left: 50.5%;
+  transform: translate(-50%, -50%);
+  font-size: 185px;
+  font-weight: bold;
+  color: rgba(243, 239, 239, 0.807); /* or any color that stands out */
+  text-shadow: 10px 2px 5px rgba(0, 0, 0, 0.3);
+  pointer-events: none; /* Ensure it does not interfere with board interactions */
+  z-index: 20; /* Ensure it is above the tiles */
+  animation: fadeInOut 1s ease-in-out forwards; /* Play once */
+}
+
+
+@keyframes fadeInOut {
+  0% {
+      opacity: 0;
+  }
+  50% {
+      opacity: 1;
+  }
+  100% {
+      opacity: 0;
+  }
+}
+
+.score {
+    position: absolute;
+    top: 32%;
+    Right: 15%;
+    background-color: #f4f4f4;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 150px;
+    font-weight: bold;
+    color: #333;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+
+
+  /* Animation.css */
+.shake {
+    animation: shake 0.5s ease-in-out;
+  }
+  
+  @keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); }
+    75% { transform: translateX(-10px); }
+    100% { transform: translateX(0); }
+  }
+  
+  .wrong-answer {
+    color: red;
+  }import React from "react";
+import './Files.css';
+
+function Files(props){
+    function numToChar(num){
+        return String.fromCharCode(num + 97);
+    }
+    return (
+        <div className="files"> 
+            {props.files.map( (rank => {
+                return <span key={numToChar(rank)}> {numToChar(rank)} </span>
+            }))}
+        </div>
+    )
+}
+export default Files.board {
+    display:grid;
+    grid-template-columns: calc(.25*var(--tile-size)) calc(8*var(--tile-size));
+}
+
+.tiles{
+    display:grid;
+    grid-template-columns: repeat(8,var(--tile-size));
+    grid-template-rows: repeat(8,var(--tile-size));
+}
+
+.tile-dark{
+    background:var(--dark-tile)
+}
+
+.tile-light{
+    background:var(--light-tile)
+}
+:root {
+    --tile-size: 80px;
+    --light-tile: #10a141;
+    --dark-tile: #0c4820;
+    --bg-color: #1a0000;
+  }
+
+  
+
+
+import {useState} from "react";
+import './App.css';
+import Board from './components/Board';
+import Login from './components/Login';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+function App() {
+  const[isAuth, setIsAuth] = useState(false)
+
+  return (
+    <div className="App" >
+      <header className="App-header">
+        {isAuth ? <Board /> : <Login onAuthentication={setIsAuth}/> }
+      </header>
+    </div>
+  );
+}
+
+export default App;
