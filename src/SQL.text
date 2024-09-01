@@ -12,4 +12,3 @@ CREATE TABLE ChessCoords(
     PRIMARY KEY (user_id, coordinate),
     FOREIGN KEY (user_id) references Users(user_id)
 );
-
